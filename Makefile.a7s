@@ -1,0 +1,34 @@
+# Native A7S / Allwinner A733 build (no Docker).
+# Usage: make -f Makefile.a7s [config|image|dtbs|modules|all]
+
+ARCH ?= arm64
+CROSS_COMPILE ?= aarch64-linux-gnu-
+HOSTCC ?= gcc
+BSP_TOP ?= bsp/
+LICHEE_KERN_DIR ?= ./
+KBUILD_DEFCONFIG ?= bsp.config
+NPROC ?= $(shell nproc)
+
+KMAKE = $(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) HOSTCC=$(HOSTCC) \
+	BSP_TOP=$(BSP_TOP) LICHEE_KERN_DIR=$(LICHEE_KERN_DIR) \
+	KBUILD_DEFCONFIG=$(KBUILD_DEFCONFIG) \
+	KCFLAGS='-Wno-enum-int-mismatch'
+
+.PHONY: all config image dtbs modules clean
+
+all: config image dtbs
+
+config:
+	$(KMAKE) defconfig radxa.config radxa_custom.config
+
+image:
+	$(KMAKE) -j$(NPROC) Image
+
+dtbs:
+	$(KMAKE) -j$(NPROC) dtbs
+
+modules:
+	$(KMAKE) -j$(NPROC) modules
+
+clean:
+	$(KMAKE) clean
