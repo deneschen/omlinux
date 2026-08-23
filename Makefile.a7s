@@ -1,5 +1,9 @@
 # Native A7S / Allwinner A733 build (no Docker).
 # Usage: make -f Makefile.a7s [config|image|dtbs|modules|all]
+#
+# Version matches linux-a733 debian changelog 5.15.147-21:
+#   KERNELRELEASE=5.15.147-21-a733
+#   LOCALVERSION=-21-a733
 
 ARCH ?= arm64
 CROSS_COMPILE ?= aarch64-linux-gnu-
@@ -8,15 +12,24 @@ BSP_TOP ?= bsp/
 LICHEE_KERN_DIR ?= ./
 KBUILD_DEFCONFIG ?= bsp.config
 NPROC ?= $(shell nproc)
+KERNEL_FORK ?= a733
+PKGVERSION ?= 5.15.147-21
+LOCALVERSION ?= -$(lastword $(subst -, ,$(PKGVERSION)))-$(KERNEL_FORK)
+KERNELRELEASE ?= $(PKGVERSION)-$(KERNEL_FORK)
 
 KMAKE = $(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) HOSTCC=$(HOSTCC) \
 	BSP_TOP=$(BSP_TOP) LICHEE_KERN_DIR=$(LICHEE_KERN_DIR) \
 	KBUILD_DEFCONFIG=$(KBUILD_DEFCONFIG) \
+	LOCALVERSION=$(LOCALVERSION) KERNELRELEASE=$(KERNELRELEASE) \
 	KCFLAGS='-Wno-enum-int-mismatch'
 
-.PHONY: all config image dtbs modules clean
+.PHONY: all config image dtbs modules clean version
 
 all: config image dtbs
+
+version:
+	@echo $(KERNELRELEASE)
+	@$(KMAKE) -s kernelrelease modules
 
 config:
 	$(KMAKE) defconfig radxa.config radxa_custom.config
