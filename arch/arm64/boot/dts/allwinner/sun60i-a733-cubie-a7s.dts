@@ -901,10 +901,14 @@
 
 &sdc2 {
 	non-removable;
-	bus-width = <8>;
-	mmc-ddr-1_8v;
-	mmc-hs200-1_8v;
-	mmc-hs400-1_8v;
+	/*
+	 * Verified eMMC baseline (2026-09-17): 4-bit HS at 26 MHz with the
+	 * sample FIFO enabled reads cleanly (a7s-emmc-read-test: 3x64MiB
+	 * hashes match).  Everything above ~50 MHz fails on this board/card
+	 * at the response path (cmd 13/6 RE RCE, tuning finds no sample
+	 * window), so high-speed modes stay disabled for now.
+	 */
+	bus-width = <4>;
 	no-sdio;
 	no-sd;
 	ctl-spec-caps = <0x328>;
@@ -915,7 +919,7 @@
 	cap-hsq;
 	/*cqe-on;*/
 	ctl-cmdq-md = <0x2>;
-	max-frequency = <200000000>;
+	max-frequency = <26000000>;
 	/*vmmc-supply = <&reg_cldo3>;*/
 	/*emmc io vol 3.3v*/
 	/*vqmmc-supply = <&reg_aldo1>;*/
@@ -965,7 +969,7 @@
 	vcc-supply = <&reg_dldo6>;
 	vccq-supply = <&reg_dcdc8>;
 	vccq2-supply = <&reg_dcdc8>;
-	status = "okay";
+	status = "disabled";
 };
 
 #ifdef TYPEC_DP
