@@ -902,13 +902,18 @@
 &sdc2 {
 	non-removable;
 	/*
-	 * Verified eMMC baseline (2026-09-17): 4-bit HS at 26 MHz with the
-	 * sample FIFO enabled reads cleanly (a7s-emmc-read-test: 3x64MiB
-	 * hashes match).  Everything above ~50 MHz fails on this board/card
-	 * at the response path (cmd 13/6 RE RCE, tuning finds no sample
-	 * window), so high-speed modes stay disabled for now.
+	 * HS400 bring-up experiment (2026-09-19): back to the vendor A7A/A7S
+	 * configuration - 8-bit, DDR/HS200/HS400, up to 200 MHz.  Kernel
+	 * tuning stays disabled (execute_tuning_in_kernel), so the driver
+	 * uses the static sdc_tm4_* delay table plus the SAMP_DL/DS_DL retry
+	 * self-heal, exactly like the proven vendor image does.  If this
+	 * turns out unstable, fall back to the verified 4-bit/26 MHz
+	 * baseline committed before this change.
 	 */
-	bus-width = <4>;
+	bus-width = <8>;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
 	no-sdio;
 	no-sd;
 	ctl-spec-caps = <0x328>;
@@ -919,7 +924,7 @@
 	cap-hsq;
 	/*cqe-on;*/
 	ctl-cmdq-md = <0x2>;
-	max-frequency = <26000000>;
+	max-frequency = <200000000>;
 	/*vmmc-supply = <&reg_cldo3>;*/
 	/*emmc io vol 3.3v*/
 	/*vqmmc-supply = <&reg_aldo1>;*/
