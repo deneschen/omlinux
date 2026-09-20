@@ -447,8 +447,12 @@ static void sunxi_mmc_set_clk_dly(struct sunxi_mmc_host *host, int clk,
 		SM_DBG(mmc_dev(host->mmc), "sfc 0x%x\n", mmc_readl(host, REG_SFC));
 	}
 	if (IS_ENABLED(CONFIG_ARCH_SUN60IW2) && host->phy_index == 2)
-		SM_INFO(mmc_dev(host->mmc), "A733 timing=%d clock=%d SFC=%08x SAMP=%08x\n",
-			timing, clk, mmc_readl(host, REG_SFC), mmc_readl(host, REG_SAMP_DL));
+		SM_INFO(mmc_dev(host->mmc),
+			"A733 timing=%d clock=%d DRV=%08x SAMP=%08x DS=%08x SFC=%08x EDSD=%08x CSDC=%08x\n",
+			timing, clk, mmc_readl(host, REG_DRV_DL),
+			mmc_readl(host, REG_SAMP_DL), mmc_readl(host, REG_DS_DL),
+			mmc_readl(host, REG_SFC), mmc_readl(host, REG_EDSD),
+			mmc_readl(host, REG_CSDC));
 
 	SM_DBG(mmc_dev(host->mmc), " REG_DRV_DL    %08x\n",
 		mmc_readl(host, REG_DRV_DL));
