@@ -902,13 +902,14 @@
 &sdc2 {
 	non-removable;
 	/*
-	 * HS400 bring-up experiment (2026-09-19): back to the vendor A7A/A7S
-	 * configuration - 8-bit, DDR/HS200/HS400, up to 200 MHz.  Kernel
+	 * Vendor A7A/A7S configuration: 8-bit, DDR/HS200/HS400, up to
+	 * 200 MHz, verified working on this board (2026-09-28).  Kernel
 	 * tuning stays disabled (execute_tuning_in_kernel), so the driver
-	 * uses the static sdc_tm4_* delay table plus the SAMP_DL/DS_DL retry
-	 * self-heal, exactly like the proven vendor image does.  If this
-	 * turns out unstable, fall back to the verified 4-bit/26 MHz
-	 * baseline committed before this change.
+	 * uses the static sdc_tm4_* delay table plus the SAMP_DL/DS_DL
+	 * retry self-heal, exactly like the vendor image.  Prerequisite:
+	 * boot0 must put the PIO port C group into adaptive withstand mode
+	 * (GPIO_POW_MOD_SEL 0x40 [5:4] = 01), otherwise high-speed modes
+	 * fail with response CRC errors.
 	 */
 	bus-width = <8>;
 	mmc-ddr-1_8v;
