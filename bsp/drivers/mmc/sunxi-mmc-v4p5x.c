@@ -434,25 +434,12 @@ static void sunxi_mmc_set_clk_dly(struct sunxi_mmc_host *host, int clk,
 	rval |= SDXC_DS_DL_SW_EN;
 	mmc_writel(host, REG_DS_DL, rval);
 
-	/*
-	 * Keep the vendor condition: SDXC_SFC_BP is BYPASS_EN of SMHC_SFC
-	 * (manual 11.3.8.30) and bypasses the sample FIFO, which breaks data
-	 * reception while CMD still works.  Only revisions that need it
-	 * (sfc_dis) may set it; the reset default is 0x6 (bypass off).
-	 */
 	if (host->sfc_dis == true) {
 		rval = mmc_readl(host, REG_SFC);
 		rval |= SDXC_SFC_BP;
 		mmc_writel(host, REG_SFC, rval);
 		SM_DBG(mmc_dev(host->mmc), "sfc 0x%x\n", mmc_readl(host, REG_SFC));
 	}
-	if (IS_ENABLED(CONFIG_ARCH_SUN60IW2) && host->phy_index == 2)
-		SM_INFO(mmc_dev(host->mmc),
-			"A733 timing=%d clock=%d DRV=%08x SAMP=%08x DS=%08x SFC=%08x EDSD=%08x CSDC=%08x\n",
-			timing, clk, mmc_readl(host, REG_DRV_DL),
-			mmc_readl(host, REG_SAMP_DL), mmc_readl(host, REG_DS_DL),
-			mmc_readl(host, REG_SFC), mmc_readl(host, REG_EDSD),
-			mmc_readl(host, REG_CSDC));
 
 	SM_DBG(mmc_dev(host->mmc), " REG_DRV_DL    %08x\n",
 		mmc_readl(host, REG_DRV_DL));
