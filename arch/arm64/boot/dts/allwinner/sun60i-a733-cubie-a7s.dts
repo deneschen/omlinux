@@ -12,6 +12,14 @@
 		pmu0 = &pmu0;
 		bat_supply = &bat_power_supply;
 		phy_switcher = &phy_switcher;
+		/*
+		 * Pin the mmcblk numbering to the U-Boot numbering
+		 * (mmc0 = SD on SMHC0, mmc1 = eMMC on SMHC2).  The extlinux
+		 * command line uses root=/dev/mmcblk${devnum}p1 so the root
+		 * filesystem always comes from the medium that booted.
+		 */
+		mmc0 = &sdc0;
+		mmc1 = &sdc2;
 	};
 
 	reg_usb0_vbus: usb0-vbus {
