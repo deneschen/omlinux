@@ -4331,6 +4331,8 @@ static int sunxi_mmc_probe(struct platform_device *pdev)
 
 	mmc_of_parse(mmc);
 	sunxi_mmc_extra_of_parse(mmc);
+	/* This host rejects POWER_OFF_NOTIFICATION=POWER_ON in requests. */
+	mmc->caps2 |= MMC_CAP2_NO_POWEROFF_NOTIFY;
 
 	if (host->sunxi_caps3 & MMC_SUNXI_CAP3_RDPST) {
 		host->mrq_slot[MRQ_SYNC] = host->mrq_slot[MRQ_ASYNC] = NULL;
