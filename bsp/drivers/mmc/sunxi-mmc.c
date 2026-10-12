@@ -3805,7 +3805,9 @@ static int sunxi_mmc_resource_request(struct sunxi_mmc_host *host,
 		&& !strcmp(apk_sta, "okay")) {
 		host->pins_uart_jtag = pinctrl_lookup_state(host->pinctrl,
 						"uart_jtag");
-		if (IS_ERR(host->pins_uart_jtag))
+		/* Optional board routing: -ENODEV means no state was defined. */
+		if (IS_ERR(host->pins_uart_jtag) &&
+		    PTR_ERR(host->pins_uart_jtag) != -ENODEV)
 			SM_WARN(&pdev->dev, "Cann't get uart0 pinstate,check if needed\n");
 	} else {
 		host->pins_uart_jtag = ERR_PTR(-ENODEV);
@@ -3818,7 +3820,9 @@ static int sunxi_mmc_resource_request(struct sunxi_mmc_host *host,
 
 	host->pins_bias_1v8 = pinctrl_lookup_state(host->pinctrl,
 				"mmc_1v8");
-	if (IS_ERR(host->pins_bias_1v8))
+	/* Fixed-voltage boards need not define a separate 1.8 V bias state. */
+	if (IS_ERR(host->pins_bias_1v8) &&
+	    PTR_ERR(host->pins_bias_1v8) != -ENODEV)
 		SM_WARN(&pdev->dev, "Cann't get pin bias hs pinstate,check if needed\n");
 
 	host->reg_base = devm_ioremap_resource(&pdev->dev,
