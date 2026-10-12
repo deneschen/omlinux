@@ -902,11 +902,10 @@
 &sdc2 {
 	non-removable;
 	/*
-	 * Vendor A7A/A7S configuration: 8-bit, DDR/HS200/HS400, up to
-	 * 200 MHz, verified working on this board (2026-09-28).  Kernel
-	 * tuning stays disabled (execute_tuning_in_kernel), so the driver
-	 * uses the static sdc_tm4_* delay table plus the SAMP_DL/DS_DL
-	 * retry self-heal, exactly like the vendor image.  Prerequisite:
+	 * 8-bit DDR/HS200/HS400, up to 200 MHz.  Kernel tuning stays
+	 * disabled; configure the HS400 data-strobe delay before the first
+	 * block read instead of relying on transfer errors to advance it.
+	 * Prerequisite:
 	 * boot0 must put the PIO port C group into adaptive withstand mode
 	 * (GPIO_POW_MOD_SEL 0x40 [5:4] = 01), otherwise high-speed modes
 	 * fail with response CRC errors.
@@ -915,6 +914,10 @@
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
 	mmc-hs400-1_8v;
+	/* Keep the 150 MHz tap (4); use the driver's initial 200 MHz tap (6).
+	 * The inherited SoC table leaves its 200 MHz byte at zero.
+	 */
+	sdc_tm4_sm4_freq1 = <0x00000604>;
 	no-sdio;
 	no-sd;
 	ctl-spec-caps = <0x328>;

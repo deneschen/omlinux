@@ -2451,7 +2451,7 @@ static int sunxi_mmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	u8 en_read_data_timeout = 0;
 	u8 tuning_success = 1;
 	u8 sdly_cfg[64];
-	char *rcv_pattern = (char *)kmalloc(128, GFP_KERNEL|GFP_DMA);
+	char *rcv_pattern;
 	char *std_pattern = NULL;
 	int err = 0;
 	u32 best_delay = 0;
@@ -2461,10 +2461,11 @@ static int sunxi_mmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	struct platform_device *pdev = to_platform_device(mmc_dev(mmc));
 
 	if (host->tuning_in_kernel != 1) {
-		SM_ERR(mmc_dev(mmc), "sdc%d :the host don't support tuning in kernel\n", host->phy_index);
+		SM_INFO(mmc_dev(mmc), "sdc%d: kernel tuning disabled, using configured delays\n", host->phy_index);
 		return 0;
 	}
 
+	rcv_pattern = kmalloc(128, GFP_KERNEL | GFP_DMA);
 	if (!rcv_pattern) {
 		SM_ERR(mmc_dev(mmc), "sdc%d malloc tuning pattern buffer failed\n",
 				host->phy_index);
